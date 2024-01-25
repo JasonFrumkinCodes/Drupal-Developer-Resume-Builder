@@ -53,4 +53,4 @@ HOOK_PREPROCESS_NODE (hook_preprocess_HOOK)
 - gathers data and formats them prior to the render layer for the work history node display
 
 HOOK_PREPROCESS_HTML (hook_preprocess_HOOK)
-- Removes the secondary block region from the page array prior to render
+- Removes the secondary block region (right sidebar) from the page array prior to render
