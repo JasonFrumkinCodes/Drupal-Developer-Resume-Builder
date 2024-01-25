@@ -29,10 +29,12 @@ class EducationBlock extends BlockBase {
         $output .= "<div class='degree_type'>".$degree_type."</div>";
         $output .= "<div class='area_of_study'>".$area_of_study."</div>";
         $output .= "<div class='school_attended mb-2'>".$school_attended."</div>";
-        $education_start_date = date_create($education_start_date);
-        $education_end_date = date_create($education_end_date);
-        $output .= "<div class='attended_dates mb-2'><i class='fa-solid fa-calendar-days'></i>".date_format($education_start_date,"F Y")." - ".date_format($education_end_date,"F Y")."</div>";
-        $output .= "<div class='school_city_state'><i class='fa-solid fa-location-dot'></i><div class='linkedin_profile'>".$school_city_state."</div></div>";
+        if($education_start_date && $education_end_date){
+          $education_start_date = date_create($education_start_date);
+          $education_end_date = date_create($education_end_date);
+          $output .= "<div class='attended_dates mb-2'><i class='fa-solid fa-calendar-days'></i>".date_format($education_start_date,"F Y")." - ".date_format($education_end_date,"F Y")."</div>";
+          $output .= "<div class='school_city_state'><i class='fa-solid fa-location-dot'></i><div class='linkedin_profile'>".$school_city_state."</div></div>";
+        }
     $output .= "</div>";
   	return [
       '#type' => 'markup',
