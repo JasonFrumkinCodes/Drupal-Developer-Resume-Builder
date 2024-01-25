@@ -1,0 +1,6 @@
+developer_resume.admin:
+  title: 'Developer Resume Settings'
+  description: 'Your personal details and education details'
+  parent: system.admin_config_development
+  route_name: developer_resume.settings.form
+  weight: 100
