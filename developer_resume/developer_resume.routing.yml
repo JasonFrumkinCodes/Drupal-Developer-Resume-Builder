@@ -1,0 +1,7 @@
+developer_resume.settings.form:
+  path: '/admin/config/development/developer_resume'
+  defaults:
+    _title: 'Resume Data Settings'
+    _form: '\Drupal\developer_resume\Form\DeveloperResumeSettingsForm'
+  requirements:
+    _permission: 'administer developer_resume'

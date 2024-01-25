@@ -1,0 +1,10 @@
+name: Developer Resume
+type: module
+description: Module defined Developer Resume and taxonomy with custom field.
+core_version_requirement: ^9.4 || ^10
+package: custom
+dependencies:
+  - drupal:block
+  - fontawesome:fontawesome
+themes:
+  - bootstrap

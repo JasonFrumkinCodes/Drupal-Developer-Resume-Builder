@@ -1,0 +1,18 @@
+[
+	{
+		"title":"Web Developer",
+		"field_employer_name":"Arlington Heights Library",
+		"field_location":"Arlington Heights, IL",
+		"field_start_date":"2015-06-06",
+		"field_end_date":"2023-12-03",
+		"field_job_duties":{"0":"Migrated www.ahml.info from Drupal 6 to Drupal 8 with well over 1 million nodes present","1":"Successful creation and implementation of a custom data harvest module for marc record data additions and changes / updates. Harvested from a 3rd party PostgreSQL database (Sierra ILS), this action happens once every 60 second from a cron job ingratiated into Drupal. New catalog records, along with current library record changes are stored / updated, and then indexed using Apache SOLR to facilitate search ability. Featuring a full faceting system and search input field auto-suggestions, search results are returned and displayed in under 1 second. Updates like a book being returned, are reflected in the online catalog within 60 seconds from when the check-in occurred","2":"Successful creation of a highly customized reservation / registration / equipment & events management system via the extension of the Drupal contributed module RNG along with several custom written Drupal modules","3":"Currently responsible for the library catalog now containing a little over 2 million nodes"}
+	},
+	{
+		"title":"Senior Drupal Developer",
+		"field_employer_name":"Family Office Exchange",
+		"field_location":"Remote / Hybrid Chicago, IL",
+		"field_start_date":"2022-07-10",
+		"field_end_date":"2023-12-12",
+		"field_job_duties":{"0":"Worked in tandem with one other developer to successfully upgrade FOX's existing Drupal 7 website to Drupal 9 located at https://public.familyoffice.com/","1":"Ensured content integrity during the upgrade/migration process","2":"Translated Drupal 7 .tpl templates files to .twig files, along with a major front-end design refresh using Bootstrap and Sass. This design refresh was facilitated through wire-frame designs on Figma.com delivered by a graphic designer and UX expert. Designs were broken down by desktop, tablet, and mobile screen size layouts.","3":"Successfully migration of hosting companies from Acquia to Pantheon (Database, File base, Codebase, and all required DNS changes)","4":"Git versioning control on Github and use of Terminus to push from Github to Pantheon"}
+	}	
+]

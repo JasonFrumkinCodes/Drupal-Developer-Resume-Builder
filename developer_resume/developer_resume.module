@@ -1,0 +1,209 @@
+<?php
+
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Core\Render\Element;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\node\Entity\Node;
+
+function developer_resume_theme_registry_alter(&$theme_registry) {
+	$theme_registry['node__work_history']['render element'] = 'content';
+	$theme_registry['node__work_history']['type'] = 'theme_engine';
+	$theme_registry['node__work_history']['template'] = 'node--work-history';
+	$theme_registry['node__work_history']['path'] = 'modules/custom/developer_resume/templates';
+
+	$theme_registry['page__front']['render element'] = 'content';
+	$theme_registry['page__front']['type'] = 'theme_engine';
+	$theme_registry['page__front']['template'] = 'page--front';
+	$theme_registry['page__front']['path'] = 'modules/custom/developer_resume/templates';
+
+}
+
+function developer_resume_preprocess_node__work_history(&$variables) {
+  $duties = array();
+  foreach($variables['elements']['field_job_duties']['#object']->get('field_job_duties')->getValue() as $job_duty){
+  	$duties[] = $job_duty['value'];
+  }
+  $variables['employment_duties'] = $duties;
+  $variables['employment_duration'] = $variables['elements']['field_start_date'][0]['#markup']." - ".$variables['elements']['field_end_date'][0]['#markup'];
+  $variables['employment_location'] = $variables['elements']['field_location'][0]['#context']['value'];
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+}
+
+function developer_resume_install() {
+	$vid = "development_skills";
+	$name = "Development Skills";
+	vocabulary_create($vid,$name,1);
+
+	$vid = "drupal_development_skills";
+	$name = "Drupal Development Skills";
+	vocabulary_create($vid,$name,0);
+
+	$vid = "general_web_development_skills";
+	$name = "Other Related Web Development Skills";
+	vocabulary_create($vid,$name,0);
+
+	personal_details_config_values();
+	work_history_nodes();
+}
+
+function developer_resume_uninstall($is_syncing) {
+	$vid = "development_skills";  
+	$name = "Development Skills";
+	vocabulary_delete($vid, $name);
+
+	$vid = "drupal_development_skills";
+	$name = "Drupal Development Skills";
+	vocabulary_delete($vid,$name);
+
+	$vid = "general_web_development_skills";
+	$name = "Other Related Web Development Skills";
+	vocabulary_delete($vid,$name);	
+
+	$bundle = "work_history";
+	entity_delete($bundle);
+}
+
+function vocabulary_create($vid,$name,$create_storage) {
+	$vocabularies = \Drupal\taxonomy\Entity\Vocabulary::loadMultiple();
+	if (!isset($vocabularies[$vid])) {
+		
+		/* create the vocabulary */
+		$vocabulary = \Drupal\taxonomy\Entity\Vocabulary::create(array(
+		    'vid' => $vid,
+		    'description' => 'Development skills vocabulary to populate the skills block',
+		    'name' => $name,
+		))->save();
+		if ($create_storage==1){
+			/* create a custom field storage configuration */
+			FieldStorageConfig::create(array(
+			    'field_name' => 'display_weight',
+			    'entity_type' => 'taxonomy_term', 
+			    'type' => 'integer',
+			    'cardinality' => 1,
+			))->save();	
+		}
+		/* attach the custom field to the newly created taxonomy vocabulary */
+		FieldConfig::create([
+			'field_name' => 'display_weight',
+			'entity_type' => 'taxonomy_term',
+			'bundle' => $vid,
+			'label' => 'Display Weight',
+		])->save();
+		/*
+			set form display options for the vocabulary:
+			- set widget to 'number'
+			- set weight to '20' so the field displays above the URL alias field
+		*/
+		$form_display = \Drupal::service('entity_display.repository')->getFormDisplay('taxonomy_term', $vid );
+		$form_display = $form_display->setComponent('display_weight', ['type' => 'number']);
+		$form_display = $form_display->setComponent('display_weight', ['weight' => '20']);
+		$form_display->save();
+		/*
+			set view display options for the vocabulary:
+			- set widget to 'number_integer'
+			- set label to 'hidden'
+		*/
+		$view_display = \Drupal::service('entity_display.repository')->getViewDisplay('taxonomy_term', $vid);
+		$view_display->setComponent('display_weight', ['type' => 'number_integer']);
+		$view_display->setComponent('display_weight', ['label' => 'hidden']);
+		$view_display->save();
+		/* success message */
+		\Drupal::messenger()->addMessage($name . ' vocabulary created');
+	
+		// Read the JSON file  
+		$json = file_get_contents('vocabulary_terms.json', FILE_USE_INCLUDE_PATH);
+		  
+		if($json){
+			// Decode the JSON file 
+			$json_data = json_decode($json,true);
+			foreach($json_data['skills'][$vid] as $term_key=>$term){
+			  $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->create([
+			    'name' => $term,
+			    'vid' => $vid,
+			    'display_weight' => $term_key,
+			  ])->save();
+			}
+		}
+
+
+
+	}
+	else {
+		/* vocabulary already exists message */
+		\Drupal::messenger()->addMessage($name . ' vocabulary alredy exits');
+	}
+}
+
+function vocabulary_delete($vid, $name) {
+ 	/* load vocabulary by machine name */
+ 	$vocab = Vocabulary::load($vid);
+
+ 	/* if vocabulary exists delete it */
+ 	if ($vocab) {
+    	$vocab->delete();
+ 	}
+
+ 	/* vocabulary successfully removed message */
+	\Drupal::messenger()->addMessage($name . ' vocabulary removed');
+}
+
+function entity_delete($bundle) {
+	$ids = \Drupal::entityQuery('node')->condition('type', $bundle)->accessCheck(FALSE)->execute();
+	$storageHandler = \Drupal::entityTypeManager()->getStorage('node');
+	$entities = $storageHandler->loadMultiple($ids);
+	foreach ($entities as $entity) {
+	     $entity->delete();
+	}	
+
+	// Delete content type.
+	$content_type = \Drupal::entityTypeManager()
+		->getStorage('node_type')
+		->load($bundle);
+	$content_type->delete();
+}
+
+function personal_details_config_values(){
+	// Read the JSON file  
+	$json = file_get_contents('personal_details.json', FILE_USE_INCLUDE_PATH);
+	  
+	if($json){
+		// Decode the JSON file 
+		$json_data = json_decode($json,true);
+		$personal_details = $json_data['personal_details'];
+		$config = \Drupal::configFactory()->getEditable('developer_resume.settings');
+		foreach($personal_details as $config_key=>$config_value){
+	    $config->set('developer_resume.'.$config_key, $config_value);
+		}
+    $config->save();
+	}
+}
+
+function work_history_nodes(){
+	// Read the JSON file  
+	$json = file_get_contents('work_experience.json', FILE_USE_INCLUDE_PATH);
+	  
+	if($json){
+		// Decode the JSON file 
+		$json_data = json_decode($json,true);
+		foreach($json_data as $work_history_array){
+			// Create a new node object.
+			$node = Node::create([
+			  'type' => 'work_history',
+			  'title' => $work_history_array['title'],
+			  'field_employer_name' => $work_history_array['field_employer_name'],
+			  'field_location' => $work_history_array['field_location'],
+			  'field_start_date' => $work_history_array['field_start_date'],
+			  'field_end_date' => $work_history_array['field_end_date'],
+			  'field_job_duties' => $work_history_array['field_job_duties'],
+			  'promote' => 0
+			]);
+
+			// Save the node.
+			$node->save();	
+		}
+	}
+}

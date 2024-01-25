@@ -1,0 +1,27 @@
+uuid: 67ed84b3-af48-4a49-a8e3-c9b5f253b6b2
+langcode: en
+status: true
+dependencies:
+  module:
+    - developer_resume
+    - system
+  theme:
+    - bootstrap
+id: bootstrap_skillsblock_2
+theme: bootstrap
+region: sidebar_first
+weight: -7
+provider: null
+plugin: simple_developer_resume
+settings:
+  id: simple_developer_resume
+  label: 'Drupal Development'
+  label_display: '0'
+  provider: developer_resume
+  taxonomy: drupal_development_skills
+  block_title: 'Drupal Development'
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '<front>'
