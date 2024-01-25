@@ -60,6 +60,9 @@
     padding: 20px;
     color: white;
 }
+#personal_details_box a {
+    color: white;
+}
 .applicant_full_name {
     font-size: 28px;
     font-weight: bold;
