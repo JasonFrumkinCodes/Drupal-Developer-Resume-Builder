@@ -3,6 +3,10 @@ Drupal Developer Resume Builder
 
 While this is custom module is specifically tailored for a Drupal developer's resume, it can be easily addapted to fit a resume for any/all lines of work
 
+DEPENDENCY:
+This module requires that bootstrap theme https://www.drupal.org/project/bootstrap is installed and set as default prior to install. 
+If bootstrap theme is not installed the module will error with unmet dependency for the blocks placed upon module install
+
 The module consists of:
 
 1 node entity bundle of type "Work History" (machine name "work_history") created via configuration files located in config\install
