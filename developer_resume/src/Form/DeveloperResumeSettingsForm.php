@@ -30,7 +30,7 @@ class DeveloperResumeSettingsForm extends ConfigFormBase {
     $form['general_info'] = array(
       '#type' => 'details',
       '#title' => $this
-        ->t('You\'r Details'),
+        ->t('Your Details'),
       '#open' => FALSE, // Controls the HTML5 'open' attribute. Defaults to FALSE.
     );
     $form['general_info']['applicant_full_name'] = [
